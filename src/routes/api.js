@@ -1,3 +1,7 @@
+import express from "express";
+
+const router = express.Router();
+
 router.get("/", async (req, res) => {
   try {
     const zaloAccessTokenHeader = req.headers["zalo-access-token"];
@@ -25,3 +29,5 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
+export default router;
