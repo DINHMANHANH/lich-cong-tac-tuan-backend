@@ -2,25 +2,35 @@ import express from "express";
 
 const router = express.Router();
 
+function getAccessTokenFromHeader(req) {
+  const header = req.headers["zalo-access-token"];
+
+  if (!header) {
+    return null;
+  }
+
+  if (typeof header === "string" && header.startsWith("Bearer ")) {
+    return header.slice(7);
+  }
+
+  return header;
+}
+
 router.get("/", async (req, res) => {
   try {
-    const zaloAccessTokenHeader = req.headers["zalo-access-token"];
+    const accessToken = getAccessTokenFromHeader(req);
 
-    if (!zaloAccessTokenHeader) {
+    if (!accessToken) {
       return res.status(401).json({
         ok: false,
         message: "Thiếu zalo-access-token",
       });
     }
 
-    const accessToken = zaloAccessTokenHeader.startsWith("Bearer ")
-      ? zaloAccessTokenHeader.split(" ")[1]
-      : zaloAccessTokenHeader;
-
     return res.json({
       ok: true,
       message: "Frontend -> backend OK",
-      tokenPreview: accessToken ? accessToken.slice(0, 12) + "..." : null,
+      tokenPreview: `${String(accessToken).slice(0, 12)}...`,
     });
   } catch (error) {
     return res.status(500).json({
@@ -32,9 +42,9 @@ router.get("/", async (req, res) => {
 
 router.get("/schedule", async (req, res) => {
   try {
-    const zaloAccessTokenHeader = req.headers["zalo-access-token"];
+    const accessToken = getAccessTokenFromHeader(req);
 
-    if (!zaloAccessTokenHeader) {
+    if (!accessToken) {
       return res.status(401).json({
         ok: false,
         message: "Thiếu zalo-access-token",
